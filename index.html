@@ -1,10 +1,466 @@
 <!DOCTYPE html>
-<html>
-	<head>
-		<meta charset="UTF-8">
-		<title></title>
-	</head>
-	<body>
-		
-	</body>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nookieland | Official Website | Midnight Entertainment</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0faff;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23a2d6f9' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        h1, h2, h3, h4, .font-display {
+            font-family: 'Luckiest Guy', cursive;
+            letter-spacing: 1px;
+        }
+
+        /* Navigation styles */
+        .nav-link {
+            transition: all 0.3s ease;
+            color: #1e3a8a; /* Dark Blue */
+            text-shadow: 1px 1px 2px rgba(255,255,255,0.7);
+        }
+        .nav-link:hover {
+            transform: translateY(-3px) scale(1.05);
+            color: #f59e0b; /* Orange */
+        }
+        .nav-link.active {
+            color: #ef4444; /* Red */
+            text-decoration: underline;
+            text-decoration-thickness: 4px;
+            text-underline-offset: 8px;
+        }
+        
+        /* Page transitions */
+        .page {
+            display: none;
+        }
+        .page.active {
+            display: block;
+        }
+        
+        /* Character Card & Symbol Styles */
+        .nookie-card {
+            transition: all 0.3s ease-in-out;
+            border-bottom-width: 8px;
+        }
+        .nookie-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+        }
+        .denny-border { border-color: #ef4444; }
+        .hobble-border { border-color: #f97316; }
+        .jinkers-border { border-color: #22c55e; }
+        .puddles-border { border-color: #3b82f6; }
+        .mitt-border { border-color: #a855f7; }
+
+        /* Game Styles */
+        #game-board {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+        }
+        .card {
+            background-color: #3b82f6;
+            color: white;
+            cursor: pointer;
+            aspect-ratio: 1 / 1;
+            transform-style: preserve-3d;
+            transition: transform 0.5s;
+            user-select: none;
+        }
+        .card.flipped, .card.matched {
+            transform: rotateY(180deg);
+        }
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .card-back {
+            transform: rotateY(180deg);
+            background-color: #fff;
+        }
+        
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.6);
+        }
+        .modal-content {
+            position: relative;
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 2rem;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 700px;
+            border-radius: 1rem;
+        }
+        .close-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1.5rem;
+            color: #aaa;
+            font-size: 2rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <!-- Header & Navigation -->
+    <header class="bg-white/80 backdrop-blur-sm sticky top-0 z-50 shadow-md">
+        <nav class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <a href="#" class="font-display text-4xl text-blue-800" data-page="home">Nookieland</a>
+            <ul class="hidden md:flex items-center space-x-6 lg:space-x-10 text-xl">
+                <li><a href="#" class="nav-link font-display active" data-page="home">Home</a></li>
+                <li><a href="#" class="nav-link font-display" data-page="characters">Characters</a></li>
+                <li><a href="#" class="nav-link font-display" data-page="games">Games</a></li>
+                <li><a href="#" class="nav-link font-display" data-page="about">About</a></li>
+                <li><a href="#" class="nav-link font-display" data-page="parents">Parents' Corner</a></li>
+            </ul>
+             <div class="md:hidden">
+                <select id="mobile-nav" class="bg-white border-2 border-blue-300 rounded-lg p-2 text-blue-800 font-bold">
+                    <option value="home">Home</option>
+                    <option value="characters">Characters</option>
+                    <option value="games">Games</option>
+                    <option value="about">About</option>
+                    <option value="parents">Parents</option>
+                </select>
+            </div>
+        </nav>
+    </header>
+
+    <main id="main-content" class="container mx-auto p-4 md:p-8">
+        <!-- Home Page -->
+        <section id="home" class="page active text-center">
+            <div class="bg-white rounded-2xl shadow-xl overflow-hidden p-6">
+                <h1 class="text-5xl md:text-7xl text-blue-600 tracking-wide">A New Adventure Every Day!</h1>
+                 <img src="https://media.discordapp.net/attachments/1090780595484905552/1366089378975186965/Nookieland_Nookie_designs.png?ex=688502e0&is=6883b160&hm=76262db40f6a7f75aa56dcc63290e15f4f3ba9e18f1b2143b0c77f003345cc7f&=&format=webp&quality=lossless&width=2673&height=1333" alt="The five Nookies lined up" class="rounded-xl w-full h-auto my-6">
+                <p class="text-lg text-gray-600 max-w-3xl mx-auto">Welcome to the official home of Nookieland! Join Denny, Hobble, Jinkers, Puddles, and Mitt as they explore their colorful world, solve problems big and small, and learn new things with a little help from their glowing belly symbols!</p>
+                 <div class="mt-8">
+                    <a href="#" data-page="games" class="nav-link-button inline-block bg-yellow-400 text-white font-display text-2xl px-8 py-3 rounded-full shadow-lg hover:bg-yellow-500 transform hover:scale-105 transition-all">Play Games!</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Characters Page -->
+        <section id="characters" class="page">
+            <h1 class="text-6xl text-center text-green-600 mb-10">Meet the Nookies</h1>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Character cards will be injected here by JS -->
+            </div>
+        </section>
+
+        <!-- Games Page -->
+        <section id="games" class="page text-center">
+             <h1 class="text-6xl text-center text-purple-600 mb-4">Nookie Games!</h1>
+             <div class="bg-white p-6 rounded-2xl shadow-xl max-w-4xl mx-auto">
+                <h2 class="text-4xl text-blue-500 mb-4">Memory Match</h2>
+                <div id="game-controls" class="flex justify-center items-center space-x-4 mb-4">
+                    <button id="reset-game" class="bg-red-500 text-white font-display text-xl px-6 py-2 rounded-full shadow-lg hover:bg-red-600 transition-all">Reset Game</button>
+                    <div id="move-counter" class="text-xl font-bold text-gray-700">Moves: 0</div>
+                </div>
+                <div id="game-board" class="max-w-xl mx-auto">
+                    <!-- Game cards injected here by JS -->
+                </div>
+                 <div id="win-message" class="hidden mt-6 text-3xl font-display text-yellow-500">
+                    You did it! You're a memory master!
+                </div>
+             </div>
+        </section>
+
+        <!-- About Page -->
+        <section id="about" class="page">
+            <h1 class="text-6xl text-center text-orange-500 mb-10">About the Show</h1>
+            <div class="bg-white p-8 rounded-2xl shadow-xl max-w-4xl mx-auto space-y-8">
+                <div>
+                    <h2 class="text-4xl text-blue-600 mb-2">Welcome to Nookieland</h2>
+                    <p class="text-gray-600 text-lg">Nookieland is a live-action preschool program from Midnight Entertainment that celebrates curiosity, problem-solving, and friendship. In a vibrant, tactile world, five raccoon-like friends called Nookies discover that the biggest adventures can happen in their own backyard.</p>
+                </div>
+                 <div>
+                    <h2 class="text-4xl text-green-600 mb-2">The Magic of an Idea</h2>
+                    <p class="text-gray-600 text-lg">Whenever one of the Nookies has a bright idea, the special shape on their belly lights up! This visual cue helps preschoolers connect the "Aha!" moment of discovery with the fun of finding a solution. It's a key part of how the show encourages creative thinking.</p>
+                </div>
+                <div>
+                    <h2 class="text-4xl text-purple-600 mb-2">Behind the Fur</h2>
+                    <p class="text-gray-600 text-lg">The Nookies are brought to life through a blend of physical performance and advanced animatronics. Talented actors wear detailed, full-body costumes, while puppeteers off-screen control the intricate movements of each Nookie's face. This allows for a range of emotions and expressions that make the characters feel truly alive.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Parents' Corner Page -->
+        <section id="parents" class="page">
+             <h1 class="text-6xl text-center text-gray-700 mb-10">Parents' Corner</h1>
+            <div class="bg-white p-8 rounded-2xl shadow-xl max-w-4xl mx-auto text-gray-700 space-y-6">
+                <h2 class="text-4xl text-blue-700">Our Educational Goals</h2>
+                <p>Hello Parents! At Midnight Entertainment, we designed Nookieland to be more than just a fun show. Our curriculum is focused on fostering key developmental skills for preschoolers:</p>
+                <ul class="list-disc list-inside space-y-2 text-lg">
+                    <li><strong>Cognitive Development:</strong> Encouraging critical thinking and problem-solving through the Nookies' challenges.</li>
+                    <li><strong>Social-Emotional Learning:</strong> Modeling positive friendship, empathy, and collaboration.</li>
+                    <li><strong>Creative Expression:</strong> Inspiring imagination and celebrating unique ideas.</li>
+                    <li><strong>Foundational STEAM:</strong> Introducing basic concepts of shapes, colors, patterns, and simple physics in a playful context.</li>
+                </ul>
+                <p>We believe that learning should be a joyful adventure, and we're thrilled to have your family join us in Nookieland!</p>
+                <div class="text-center pt-4 border-t mt-8">
+                    <h3 class="text-2xl font-bold mb-2">Legal & Information</h3>
+                    <div class="flex justify-center space-x-4">
+                        <a href="#" id="open-terms" class="text-blue-600 hover:underline">Terms of Use</a>
+                        <a href="#" id="open-privacy" class="text-blue-600 hover:underline">Privacy Policy</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-blue-800 text-white text-center py-6 mt-12">
+        <p class="font-display text-2xl">A Midnight Entertainment Production</p>
+        <p class="text-sm text-blue-200">&copy; 2025 Midnight Entertainment. All Rights Reserved.</p>
+    </footer>
+
+    <!-- Legal Modals -->
+    <div id="terms-modal" class="modal">
+      <div class="modal-content">
+        <span class="close-btn" data-modal="terms-modal">&times;</span>
+        <h2 class="text-3xl font-bold mb-4">Terms of Use</h2>
+        <p class="mb-2">Welcome to the Nookieland website. By accessing this site, you agree to these terms. All content, including images, characters, and games, is the property of Midnight Entertainment and is protected by copyright laws. This content is for personal, non-commercial use only.</p>
+        <p>You agree not to reproduce, distribute, or create derivative works from any content without express written permission. The games provided are for entertainment purposes; we are not liable for any issues arising from their use. We reserve the right to modify these terms at any time.</p>
+      </div>
+    </div>
+
+    <div id="privacy-modal" class="modal">
+      <div class="modal-content">
+        <span class="close-btn" data-modal="privacy-modal">&times;</span>
+        <h2 class="text-3xl font-bold mb-4">Privacy Policy</h2>
+        <p class="mb-2">Your privacy is important to us. This site does not collect any personally identifiable information from its users. The games on this site are self-contained and do not transmit any data.</p>
+        <p>We may use anonymous analytics to understand website traffic and improve user experience, such as which pages are most popular. This data is aggregated and cannot be used to identify any individual. This policy may be updated, and we encourage you to review it periodically.</p>
+      </div>
+    </div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- Page Navigation ---
+            const navLinks = document.querySelectorAll('.nav-link, .nav-link-button, a.font-display');
+            const mobileNav = document.getElementById('mobile-nav');
+            const pages = document.querySelectorAll('.page');
+            const mainContent = document.getElementById('main-content');
+
+            function showPage(pageId) {
+                // Hide all pages
+                pages.forEach(page => page.classList.remove('active'));
+
+                // Show the target page
+                const targetPage = document.getElementById(pageId);
+                if (targetPage) {
+                    targetPage.classList.add('active');
+                } else {
+                    document.getElementById('home').classList.add('active'); // Fallback to home
+                }
+                
+                // Update active state for desktop nav
+                document.querySelectorAll('.nav-link').forEach(link => {
+                    link.classList.toggle('active', link.dataset.page === pageId);
+                });
+
+                // Update mobile nav selection
+                mobileNav.value = pageId;
+                
+                // Scroll to top of content
+                mainContent.scrollIntoView({ behavior: 'smooth' });
+            }
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const pageId = e.currentTarget.dataset.page;
+                    showPage(pageId);
+                });
+            });
+
+             mobileNav.addEventListener('change', (e) => {
+                showPage(e.target.value);
+            });
+            
+            // --- Character Data & Page Population ---
+            const nookies = [
+                { name: 'Denny', color: 'red-500', borderColor: 'denny-border', symbol: '♦', role: 'The Leader', bio: 'When Denny gets an idea, his red diamond symbol glows bright! He\'s always ready for a new challenge.', voice: 'Mark Rendall' },
+                { name: 'Hobble', color: 'orange-500', borderColor: 'hobble-border', symbol: '●', role: 'The Cheerful One', bio: 'Hobble\'s bright orange circle lights up when he\'s feeling inspired. He brings smiles to everyone he meets!', voice: 'Julie Lemieux' },
+                { name: 'Jinkers', color: 'green-500', borderColor: 'jinkers-border', symbol: '■', role: 'The Thinker', bio: 'Look out! Jinkers\' green square shines when he\'s figured something out. He\'s the master of clever plans.', voice: 'Richard Binsley' },
+                { name: 'Puddles', color: 'blue-500', borderColor: 'puddles-border', symbol: '▲', role: 'The Explorer', bio: 'Puddles\'s blue triangle glows when adventure calls! He loves discovering hidden paths and secret spots.', voice: 'Rob Tinkler' },
+                { name: 'Mitt', color: 'purple-500', borderColor: 'mitt-border', symbol: '★', role: 'The Dreamer', bio: 'When a magical idea pops into her head, Mitt\'s purple star sparkles! She loves art, music, and imagination.', voice: 'Katie Griffin' }
+            ];
+
+            const charactersContainer = document.querySelector('#characters .grid');
+            if(charactersContainer){
+                 charactersContainer.innerHTML = nookies.map(nookie => `
+                    <div class="nookie-card bg-white rounded-2xl shadow-lg p-6 text-center ${nookie.borderColor}">
+                        <h3 class="text-5xl font-display text-${nookie.color}">${nookie.name}</h3>
+                        <div class="my-4 text-8xl text-${nookie.color}">${nookie.symbol}</div>
+                        <p class="font-display text-2xl text-gray-700">${nookie.role}</p>
+                        <p class="text-base text-gray-500 mt-2 min-h-[60px]">${nookie.bio}</p>
+                        <p class="text-xs text-gray-400 mt-4">Voiced by ${nookie.voice}</p>
+                    </div>
+                `).join('');
+            }
+
+            // --- Memory Match Game ---
+            const gameBoard = document.getElementById('game-board');
+            const resetButton = document.getElementById('reset-game');
+            const moveCounter = document.getElementById('move-counter');
+            const winMessage = document.getElementById('win-message');
+            
+            let cardsData = [...nookies, ...nookies]; // Duplicate for pairs
+            let flippedCards = [];
+            let matchedPairs = 0;
+            let moves = 0;
+            let lockBoard = false;
+
+            function shuffle(array) {
+                array.sort(() => Math.random() - 0.5);
+            }
+
+            function startGame() {
+                // Reset game state
+                flippedCards = [];
+                matchedPairs = 0;
+                moves = 0;
+                lockBoard = false;
+                moveCounter.textContent = `Moves: 0`;
+                winMessage.classList.add('hidden');
+                
+                shuffle(cardsData);
+                gameBoard.innerHTML = ''; // Clear previous board
+
+                cardsData.forEach(item => {
+                    const cardElement = document.createElement('div');
+                    cardElement.classList.add('card', 'rounded-lg', 'shadow-md');
+                    cardElement.dataset.name = item.name;
+
+                    cardElement.innerHTML = `
+                        <div class="card-face card-front rounded-lg">
+                            <span class="font-display text-4xl">?</span>
+                        </div>
+                        <div class="card-face card-back rounded-lg text-${item.color}">
+                           <span class="text-6xl">${item.symbol}</span>
+                        </div>
+                    `;
+                    gameBoard.appendChild(cardElement);
+                    cardElement.addEventListener('click', handleCardClick);
+                });
+            }
+
+            function handleCardClick(e) {
+                if (lockBoard) return;
+                const clickedCard = e.currentTarget;
+                if (clickedCard.classList.contains('flipped')) return;
+
+                flipCard(clickedCard);
+
+                if (flippedCards.length < 2) {
+                    flippedCards.push(clickedCard);
+                }
+
+                if (flippedCards.length === 2) {
+                    moves++;
+                    moveCounter.textContent = `Moves: ${moves}`;
+                    checkForMatch();
+                }
+            }
+
+            function flipCard(card) {
+                card.classList.add('flipped');
+            }
+
+            function checkForMatch() {
+                lockBoard = true;
+                const [card1, card2] = flippedCards;
+                const isMatch = card1.dataset.name === card2.dataset.name;
+
+                if (isMatch) {
+                    disableCards();
+                } else {
+                    unflipCards();
+                }
+            }
+
+            function disableCards() {
+                flippedCards[0].classList.add('matched');
+                flippedCards[1].classList.add('matched');
+                matchedPairs++;
+                resetTurn();
+                if (matchedPairs === nookies.length) {
+                    winMessage.classList.remove('hidden');
+                }
+            }
+
+            function unflipCards() {
+                setTimeout(() => {
+                    flippedCards[0].classList.remove('flipped');
+                    flippedCards[1].classList.remove('flipped');
+                    resetTurn();
+                }, 1000);
+            }
+
+            function resetTurn() {
+                flippedCards = [];
+                lockBoard = false;
+            }
+
+            resetButton.addEventListener('click', startGame);
+
+            // --- Modal Logic ---
+            const termsModal = document.getElementById('terms-modal');
+            const privacyModal = document.getElementById('privacy-modal');
+            const openTermsBtn = document.getElementById('open-terms');
+            const openPrivacyBtn = document.getElementById('open-privacy');
+            const closeBtns = document.querySelectorAll('.close-btn');
+
+            function openModal(modal) {
+                modal.style.display = 'block';
+            }
+
+            function closeModal(modal) {
+                modal.style.display = 'none';
+            }
+
+            openTermsBtn.addEventListener('click', (e) => { e.preventDefault(); openModal(termsModal); });
+            openPrivacyBtn.addEventListener('click', (e) => { e.preventDefault(); openModal(privacyModal); });
+            closeBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    closeModal(document.getElementById(btn.dataset.modal));
+                });
+            });
+            window.addEventListener('click', (e) => {
+                if (e.target == termsModal) closeModal(termsModal);
+                if (e.target == privacyModal) closeModal(privacyModal);
+            });
+
+
+            // Initial load
+            startGame();
+        });
+    </script>
+</body>
 </html>
